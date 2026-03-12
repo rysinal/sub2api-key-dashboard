@@ -236,6 +236,8 @@
             border-radius: 16px;
             padding: clamp(1.25rem, 2.5vw, 1.5rem);
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            min-width: 0; /* 防止 grid 子元素撑破容器 */
+            overflow: hidden;
         }
 
         .card:hover {
