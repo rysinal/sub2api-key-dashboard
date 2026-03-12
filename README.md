@@ -39,23 +39,26 @@ A lightweight, self-hosted dashboard for monitoring Sub2API usage and statistics
 ### Prerequisites
 
 - Docker installed on your system
-- A valid Sub2API key
+- A valid Sub2API domain (e.g., `https://your-sub2api-domain.com`)
 
 ### Run with Docker
 
 ```bash
+# Set your Sub2API domain
+export API_BASE_URL=https://your-sub2api-domain.com
+
 docker run -d \
   -p 11080:11080 \
-  -e API_BASE_URL=https://your-api-domain.com \
+  -e API_BASE_URL=${API_BASE_URL} \
   --name sub2api-key-dashboard \
   rysinal86/sub2api-key-dashboard
 ```
 
 Then open your browser and navigate to `http://localhost:11080`
 
-## 📦 Installation
+## 📦 Local Build & Install
 
-### Option 1: Docker (Recommended)
+### Option 1: Docker
 
 1. **Clone the repository**
 
@@ -67,41 +70,43 @@ cd sub2api-key-dashboard
 2. **Build the Docker image**
 
 ```bash
-docker build -t rysinal86/sub2api-key-dashboard .
+docker build -t sub2api-key-dashboard .
 ```
 
 3. **Run the container**
 
 ```bash
+# Set your Sub2API domain
+export API_BASE_URL=https://your-sub2api-domain.com
+
 docker run -d \
   -p 11080:11080 \
-  -e API_BASE_URL=https://your-api-domain.com \
+  -e API_BASE_URL=${API_BASE_URL} \
   --name sub2api-key-dashboard \
-  rysinal86/sub2api-key-dashboard
+  sub2api-key-dashboard
 ```
 
 ### Option 2: Docker Compose
 
-1. **Create a `docker-compose.yml` file**
+A `docker-compose.yml` is included in the repository. Just clone and start:
 
-```yaml
-version: '3.8'
-
-services:
-  sub2api-key-dashboard:
-    build: .
-    ports:
-      - "11080:11080"
-    environment:
-      - API_BASE_URL=https://your-api-domain.com
-    restart: unless-stopped
-```
-
-2. **Start the service**
+1. **Clone the repository**
 
 ```bash
+git clone https://github.com/rysinal86/sub2api-key-dashboard.git
+cd sub2api-key-dashboard
+```
+
+2. **Set your Sub2API domain and start**
+
+```bash
+# Set your Sub2API domain (required)
+export API_BASE_URL=https://your-sub2api-domain.com
+
 docker-compose up -d
 ```
+
+> **Note:** `API_BASE_URL` must be set before running `docker-compose up`. The compose file reads it from your environment automatically.
 
 ## ⚙️ Configuration
 
@@ -109,7 +114,7 @@ docker-compose up -d
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `API_BASE_URL` | Full URL of the API endpoint (e.g., `https://api.example.com`) | ✅ Yes |
+| `API_BASE_URL` | Full URL of your Sub2API domain (e.g., `https://your-sub2api-domain.com`) | ✅ Yes |
 
 ### Port Configuration
 

@@ -39,23 +39,26 @@
 ### 前置条件
 
 - 系统已安装 Docker
-- 有效的 Sub2API Key
+- 有效的 Sub2API 域名（例如 `https://your-sub2api-domain.com`）
 
 ### Docker 运行
 
 ```bash
+# 设置你的 Sub2API 域名
+export API_BASE_URL=https://your-sub2api-domain.com
+
 docker run -d \
   -p 11080:11080 \
-  -e API_BASE_URL=https://your-api-domain.com \
+  -e API_BASE_URL=${API_BASE_URL} \
   --name sub2api-key-dashboard \
   rysinal86/sub2api-key-dashboard
 ```
 
 然后打开浏览器，访问 `http://localhost:11080`
 
-## 📦 安装
+## 📦 本地构建与安装
 
-### 方式一：Docker（推荐）
+### 方式一：Docker
 
 1. **克隆仓库**
 
@@ -67,41 +70,43 @@ cd sub2api-key-dashboard
 2. **构建 Docker 镜像**
 
 ```bash
-docker build -t rysinal86/sub2api-key-dashboard .
+docker build -t sub2api-key-dashboard .
 ```
 
 3. **运行容器**
 
 ```bash
+# 设置你的 Sub2API 域名
+export API_BASE_URL=https://your-sub2api-domain.com
+
 docker run -d \
   -p 11080:11080 \
-  -e API_BASE_URL=https://your-api-domain.com \
+  -e API_BASE_URL=${API_BASE_URL} \
   --name sub2api-key-dashboard \
-  rysinal86/sub2api-key-dashboard
+  sub2api-key-dashboard
 ```
 
 ### 方式二：Docker Compose
 
-1. **创建 `docker-compose.yml` 文件**
+仓库中已包含 `docker-compose.yml`，克隆后直接启动即可：
 
-```yaml
-version: '3.8'
-
-services:
-  sub2api-key-dashboard:
-    build: .
-    ports:
-      - "11080:11080"
-    environment:
-      - API_BASE_URL=https://your-api-domain.com
-    restart: unless-stopped
-```
-
-2. **启动服务**
+1. **克隆仓库**
 
 ```bash
+git clone https://github.com/rysinal86/sub2api-key-dashboard.git
+cd sub2api-key-dashboard
+```
+
+2. **设置域名并启动**
+
+```bash
+# 设置你的 Sub2API 域名（必填）
+export API_BASE_URL=https://your-sub2api-domain.com
+
 docker-compose up -d
 ```
+
+> **注意：** 必须在执行 `docker-compose up` 前设置 `API_BASE_URL`，compose 文件会自动从环境变量中读取。
 
 ## ⚙️ 配置
 
@@ -109,7 +114,7 @@ docker-compose up -d
 
 | 变量 | 说明 | 是否必填 |
 |------|------|----------|
-| `API_BASE_URL` | API 端点的完整 URL（例如 `https://api.example.com`） | ✅ 必填 |
+| `API_BASE_URL` | 你的 Sub2API 域名完整 URL（例如 `https://your-sub2api-domain.com`） | ✅ 必填 |
 
 ### 端口配置
 

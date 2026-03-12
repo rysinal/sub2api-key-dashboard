@@ -1,0 +1,8 @@
+services:
+  sub2api-key-dashboard:
+    build: .
+    ports:
+      - "11080:11080"
+    environment:
+      - API_BASE_URL=${API_BASE_URL}
+    restart: unless-stopped
