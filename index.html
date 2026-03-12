@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sub2API Usage Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: oklch(98% 0.002 264);
+            --bg-secondary: oklch(96% 0.004 264);
+            --bg-tertiary: oklch(94% 0.006 264);
+            --text-primary: oklch(25% 0.015 264);
+            --text-secondary: oklch(45% 0.012 264);
+            --text-tertiary: oklch(65% 0.008 264);
+            --accent-primary: oklch(55% 0.18 264);
+            --accent-secondary: oklch(65% 0.15 280);
+            --success: oklch(60% 0.15 145);
+            --warning: oklch(70% 0.15 85);
+            --error: oklch(60% 0.18 25);
+            --border: oklch(88% 0.006 264);
+            --shadow: oklch(25% 0.015 264 / 0.08);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: clamp(1rem, 2.5vw, 2rem);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: clamp(1.25rem, 3vw, 2rem);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .header-content {
+            flex: 1;
+        }
+
+        h1 {
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .subtitle {
+            font-size: clamp(0.875rem, 2vw, 1rem);
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .lang-switcher {
+            display: flex;
+            gap: 0.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.375rem;
+        }
+
+        .lang-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            white-space: nowrap;
+        }
+
+        .lang-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .lang-btn.active {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .lang-btn.active:hover {
+            background: oklch(50% 0.2 264);
+        }
+
+        .auth-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: clamp(1.25rem, 2.5vw, 1.75rem);
+            margin-bottom: clamp(1.25rem, 3vw, 2rem);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        .input-wrapper {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.01em;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 0.875rem 1.125rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9375rem;
+            background: var(--bg-primary);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px oklch(55% 0.18 264 / 0.1);
+        }
+
+        .toggle-key-btn {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            font-size: 1.125rem;
+            color: var(--text-tertiary);
+            transition: color 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-key-btn:hover {
+            color: var(--text-secondary);
+            transform: translateY(-50%);
+            box-shadow: none;
+        }
+
+        button {
+            padding: 0.875rem 2rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            white-space: nowrap;
+        }
+
+        button:hover:not(:disabled):not(.toggle-key-btn):not(.lang-btn) {
+            background: oklch(50% 0.2 264);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        button:active:not(:disabled):not(.toggle-key-btn) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .dashboard {
+            display: none;
+            gap: clamp(1rem, 2vw, 1.5rem);
+        }
+
+        .dashboard.visible {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        @media (max-width: 1400px) {
+            .dashboard.visible {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard.visible {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: clamp(1.25rem, 2.5vw, 1.5rem);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .card:hover {
+            border-color: oklch(82% 0.012 264);
+            box-shadow: 0 8px 24px var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-badge {
+            padding: 0.375rem 0.875rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-active {
+            background: oklch(60% 0.15 145 / 0.15);
+            color: var(--success);
+        }
+
+        .status-warning {
+            background: oklch(70% 0.15 85 / 0.15);
+            color: var(--warning);
+        }
+
+        .metric-large {
+            font-size: clamp(1.75rem, 4vw, 2.25rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 0.375rem;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.875rem;
+            margin-top: 1rem;
+        }
+
+        .metric-item {
+            padding: 0.75rem;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+        }
+
+        .metric-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.125rem;
+        }
+
+        .metric-small {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .model-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 1rem;
+        }
+
+        .model-table th {
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.75rem 1rem;
+            background: var(--bg-tertiary);
+        }
+
+        .model-table th.text-right {
+            text-align: right;
+        }
+
+        .model-table th:first-child {
+            border-radius: 8px 0 0 0;
+        }
+
+        .model-table th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+
+        .model-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+        }
+
+        .model-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .model-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .cost-value {
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+
+        .rate-limit-card {
+            grid-column: 1 / -1;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .progress-fill:not(.warning) {
+            background: linear-gradient(90deg,
+                oklch(65% 0.15 145) 0%,
+                oklch(70% 0.15 155) 50%,
+                oklch(75% 0.15 95) 100%);
+        }
+
+        .progress-fill.warning {
+            background: linear-gradient(90deg,
+                oklch(75% 0.15 95) 0%,
+                oklch(70% 0.15 85) 50%,
+                oklch(60% 0.18 25) 100%);
+        }
+
+        .rate-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--bg-tertiary);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: oklch(60% 0.18 25 / 0.1);
+            color: var(--error);
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            border-left: 3px solid var(--error);
+        }
+
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .model-table {
+                font-size: 0.8125rem;
+            }
+
+            .model-table th,
+            .model-table td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard.visible {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1 data-i18n="title">Sub2API Usage Dashboard</h1>
+                <p class="subtitle" data-i18n="subtitle">实时监控您的 API 使用情况和配额</p>
+            </div>
+            <div class="lang-switcher" id="langSwitcher">
+                <button class="lang-btn" data-lang="zh">中文</button>
+                <button class="lang-btn" data-lang="en">English</button>
+            </div>
+        </header>
+
+        <div class="auth-section" id="authSection">
+            <div id="authForm">
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <label for="apiKey" data-i18n="apiKeyLabel">API Key</label>
+                        <div style="position: relative;">
+                            <input
+                                type="text"
+                                id="apiKey"
+                                placeholder="sk-..."
+                                autocomplete="off"
+                                style="padding-right: 3rem;"
+                            >
+                            <button type="button" id="toggleKey" onclick="toggleKeyVisibility()" class="toggle-key-btn">👁️</button>
+                        </div>
+                    </div>
+                    <button id="queryBtn" onclick="fetchUsage()">
+                        <span id="btnText" data-i18n="queryBtn">查询用量</span>
+                        <span id="btnLoading" class="loading hidden"></span>
+                    </button>
+                </div>
+                <div id="errorContainer"></div>
+            </div>
+        </div>
+
+        <div class="dashboard" id="dashboard">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title" data-i18n="totalUsage">总用量</h3>
+                    <span class="card-icon">💳</span>
+                </div>
+                <div class="metric-large" id="totalCost">$0.00</div>
+                <div class="metric-label" data-i18n="totalCostLabel">总消费</div>
+                <div class="metric-grid">
+                    <div class="metric-item">
+                        <div class="metric-value" id="totalRequests">0</div>
+                        <div class="metric-small" data-i18n="totalRequests">总请求数</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="totalTokens">0</div>
+                        <div class="metric-small" data-i18n="totalTokens">总 Tokens</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title" data-i18n="todayUsage">今日用量</h3>
+                    <span class="card-icon">📊</span>
+                </div>
+                <div class="metric-large" id="todayCost">$0.00</div>
+                <div class="metric-label" data-i18n="todayCostLabel">今日消费</div>
+                <div class="metric-grid">
+                    <div class="metric-item">
+                        <div class="metric-value" id="todayRequests">0</div>
+                        <div class="metric-small" data-i18n="requests">请求数</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="todayTokens">0</div>
+                        <div class="metric-small">Tokens</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title" data-i18n="performance">性能指标</h3>
+                    <span class="card-icon">⚡</span>
+                </div>
+                <div class="metric-large" id="avgDuration">0ms</div>
+                <div class="metric-label" data-i18n="avgResponse">平均响应时间</div>
+                <div class="metric-grid">
+                    <div class="metric-item">
+                        <div class="metric-value" id="rpm">0</div>
+                        <div class="metric-small">RPM</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="tpm">0</div>
+                        <div class="metric-small">TPM</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title" data-i18n="rateLimit">速率限制</h3>
+                    <span class="card-icon">🚦</span>
+                </div>
+                <div id="rateLimitsContainer"></div>
+            </div>
+
+            <div class="card" style="grid-column: 1 / -1;">
+                <div class="card-header">
+                    <h3 class="card-title" data-i18n="modelStats">模型使用统计</h3>
+                </div>
+                <table class="model-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="thModel">模型</th>
+                            <th class="text-right" data-i18n="thRequests">请求数</th>
+                            <th class="text-right" data-i18n="thInputTokens">输入 Tokens</th>
+                            <th class="text-right" data-i18n="thOutputTokens">输出 Tokens</th>
+                            <th class="text-right" data-i18n="thCacheCreate">缓存创建</th>
+                            <th class="text-right" data-i18n="thCacheRead">缓存读取</th>
+                            <th class="text-right" data-i18n="thTotalTokens">总 Tokens</th>
+                            <th class="text-right" data-i18n="thCost">成本</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modelStatsBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ── 国际化 ──────────────────────────────────────────────
+        const translations = {
+            zh: {
+                title: 'Sub2API 使用仪表盘',
+                subtitle: '实时监控您的 API 使用情况和配额',
+                apiKeyLabel: 'API 密钥',
+                queryBtn: '查询用量',
+                totalUsage: '总用量',
+                totalCostLabel: '总消费',
+                totalRequests: '总请求数',
+                totalTokens: '总 Tokens',
+                todayUsage: '今日用量',
+                todayCostLabel: '今日消费',
+                requests: '请求数',
+                performance: '性能指标',
+                avgResponse: '平均响应时间',
+                rateLimit: '速率限制',
+                modelStats: '模型使用统计',
+                thModel: '模型',
+                thRequests: '请求数',
+                thInputTokens: '输入 Tokens',
+                thOutputTokens: '输出 Tokens',
+                thCacheCreate: '缓存创建',
+                thCacheRead: '缓存读取',
+                thTotalTokens: '总 Tokens',
+                thCost: '成本',
+                window: '窗口',
+                remaining: '剩余',
+                nextReset: '下次重置',
+                windowStart: '窗口开始',
+                errEmptyKey: '请输入 API Key',
+                errRequest: '请求失败',
+                errInvalidKey: 'API Key 无效',
+                noRateLimit: '该 API Key 无速率限制',
+            },
+            en: {
+                title: 'Sub2API Usage Dashboard',
+                subtitle: 'Real-time monitoring of your API usage and quota',
+                apiKeyLabel: 'API Key',
+                queryBtn: 'Fetch Usage',
+                totalUsage: 'Total Usage',
+                totalCostLabel: 'Total Cost',
+                totalRequests: 'Total Requests',
+                totalTokens: 'Total Tokens',
+                todayUsage: "Today's Usage",
+                todayCostLabel: "Today's Cost",
+                requests: 'Requests',
+                performance: 'Performance',
+                avgResponse: 'Avg Response Time',
+                rateLimit: 'Rate Limits',
+                modelStats: 'Model Usage Stats',
+                thModel: 'Model',
+                thRequests: 'Requests',
+                thInputTokens: 'Input Tokens',
+                thOutputTokens: 'Output Tokens',
+                thCacheCreate: 'Cache Creation',
+                thCacheRead: 'Cache Read',
+                thTotalTokens: 'Total Tokens',
+                thCost: 'Cost',
+                window: 'Window',
+                remaining: 'Remaining',
+                nextReset: 'Next Reset',
+                windowStart: 'Window Start',
+                errEmptyKey: 'Please enter an API Key',
+                errRequest: 'Request failed',
+                errInvalidKey: 'Invalid API Key',
+                noRateLimit: 'No rate limits for this API key',
+            }
+        };
+
+        let currentLang = 'en';
+
+        function detectLanguage() {
+            const saved = localStorage.getItem('preferred-language');
+            if (saved && translations[saved]) return saved;
+            const nav = (navigator.language || navigator.userLanguage || '').toLowerCase();
+            return nav.startsWith('zh') ? 'zh' : 'en';
+        }
+
+        function applyTranslations(lang) {
+            const t = translations[lang];
+            document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key] !== undefined) el.textContent = t[key];
+            });
+            // 更新语言按钮激活状态
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
+            });
+        }
+
+        function switchLanguage(lang) {
+            if (!translations[lang]) return;
+            currentLang = lang;
+            localStorage.setItem('preferred-language', lang);
+            applyTranslations(lang);
+            // 若已有数据则重新渲染动态部分（速率限制含翻译文本）
+            if (window._lastData) renderRateLimits(window._lastData.rate_limits);
+        }
+
+        function t(key) {
+            return translations[currentLang][key] || key;
+        }
+
+        // ── 工具函数 ─────────────────────────────────────────────
+        let currentApiKey = null;
+        let isKeyVisible = true;
+
+        function toggleKeyVisibility() {
+            const input = document.getElementById('apiKey');
+            const btn = document.getElementById('toggleKey');
+            isKeyVisible = !isKeyVisible;
+            input.type = isKeyVisible ? 'text' : 'password';
+            btn.textContent = isKeyVisible ? '👁️' : '🙈';
+        }
+
+        function formatNumber(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(2) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(2) + 'K';
+            return num.toLocaleString();
+        }
+
+        function formatCost(cost) {
+            return '$' + cost.toFixed(4);
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const locale = currentLang === 'zh' ? 'zh-CN' : 'en-US';
+            return date.toLocaleString(locale, {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function showError(message) {
+            document.getElementById('errorContainer').innerHTML =
+                `<div class="error-message">${message}</div>`;
+        }
+
+        function clearError() {
+            document.getElementById('errorContainer').innerHTML = '';
+        }
+
+        // ── 数据获取 ─────────────────────────────────────────────
+        async function fetchUsage() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+
+            if (!apiKey) {
+                showError(t('errEmptyKey'));
+                return;
+            }
+
+            clearError();
+            document.getElementById('btnText').classList.add('hidden');
+            document.getElementById('btnLoading').classList.remove('hidden');
+            document.getElementById('queryBtn').disabled = true;
+
+            try {
+                const response = await fetch('/api/v1/usage', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'User-Agent': 'cc-switch/1.0'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`${t('errRequest')}: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (!data.isValid) {
+                    throw new Error(t('errInvalidKey'));
+                }
+
+                currentApiKey = apiKey;
+                sessionStorage.setItem('lastApiKey', apiKey);
+                window._lastData = data;
+                renderDashboard(data);
+
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                document.getElementById('btnText').classList.remove('hidden');
+                document.getElementById('btnLoading').classList.add('hidden');
+                document.getElementById('queryBtn').disabled = false;
+            }
+        }
+
+        // ── 渲染函数 ─────────────────────────────────────────────
+        function renderDashboard(data) {
+            document.getElementById('dashboard').classList.add('visible');
+
+            document.getElementById('totalCost').textContent = formatCost(data.usage.total.actual_cost);
+            document.getElementById('totalRequests').textContent = formatNumber(data.usage.total.requests);
+            document.getElementById('totalTokens').textContent = formatNumber(data.usage.total.total_tokens);
+
+            document.getElementById('todayCost').textContent = formatCost(data.usage.today.actual_cost);
+            document.getElementById('todayRequests').textContent = formatNumber(data.usage.today.requests);
+            document.getElementById('todayTokens').textContent = formatNumber(data.usage.today.total_tokens);
+
+            document.getElementById('avgDuration').textContent =
+                Math.round(data.usage.average_duration_ms) + 'ms';
+            document.getElementById('rpm').textContent = data.usage.rpm;
+            document.getElementById('tpm').textContent = data.usage.tpm;
+
+            renderRateLimits(data.rate_limits);
+            renderModelStats(data.model_stats);
+        }
+
+        function renderRateLimits(rateLimits) {
+            const container = document.getElementById('rateLimitsContainer');
+            container.innerHTML = '';
+
+            if (!rateLimits || rateLimits.length === 0) {
+                container.innerHTML = `<div style="font-size:0.875rem;color:var(--text-tertiary);padding:0.5rem 0;">${t('noRateLimit')}</div>`;
+                return;
+            }
+
+            rateLimits.forEach(limit => {
+                const percentage = (limit.used / limit.limit) * 100;
+                const isWarning = percentage > 80;
+                const isNearLimit = percentage > 50;
+                const isAtLimit = percentage >= 95;
+                const timeLabel = isAtLimit ? t('nextReset') : t('windowStart');
+                const timeValue = limit.window_start || limit.reset_at;
+
+                container.innerHTML += `
+                    <div style="margin-bottom: 1.25rem;">
+                        <div class="rate-info">
+                            <span><strong>$${limit.used.toFixed(2)}</strong> / $${limit.limit}</span>
+                            <span style="font-size: 0.8125rem; color: var(--text-tertiary);">${t('window')}: ${limit.window}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill ${isWarning ? 'warning' : ''}"
+                                 style="width: ${Math.min(percentage, 100)}%"></div>
+                        </div>
+                        <div style="font-size:0.8125rem;color:var(--text-tertiary);margin-bottom:0.25rem;">${timeLabel}: ${formatDate(timeValue)}</div>
+                        <div style="font-size:0.8125rem;font-weight:600;color:${isNearLimit ? 'var(--warning)' : 'var(--success)'};">${t('remaining')}: $${limit.remaining.toFixed(2)}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderModelStats(modelStats) {
+            const tbody = document.getElementById('modelStatsBody');
+            tbody.innerHTML = '';
+
+            modelStats.forEach(model => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><span class="model-name">${model.model}</span></td>
+                    <td class="text-right">${formatNumber(model.requests)}</td>
+                    <td class="text-right">${formatNumber(model.input_tokens)}</td>
+                    <td class="text-right">${formatNumber(model.output_tokens)}</td>
+                    <td class="text-right">${formatNumber(model.cache_creation_tokens)}</td>
+                    <td class="text-right">${formatNumber(model.cache_read_tokens)}</td>
+                    <td class="text-right">${formatNumber(model.total_tokens)}</td>
+                    <td class="text-right"><span class="cost-value">${formatCost(model.actual_cost)}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // ── 初始化 ───────────────────────────────────────────────
+        document.getElementById('apiKey').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') fetchUsage();
+        });
+
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => switchLanguage(btn.dataset.lang));
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // 恢复 API Key
+            const savedApiKey = sessionStorage.getItem('lastApiKey');
+            if (savedApiKey) {
+                document.getElementById('apiKey').value = savedApiKey;
+            }
+            // 应用语言
+            currentLang = detectLanguage();
+            applyTranslations(currentLang);
+        });
+    </script>
+</body>
+</html>
