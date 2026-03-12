@@ -47,8 +47,8 @@
 docker run -d \
   -p 11080:11080 \
   -e API_BASE_URL=https://your-api-domain.com \
-  --name sub2api-dashboard \
-  sub2api-dashboard
+  --name sub2api-key-dashboard \
+  rysinal86/sub2api-key-dashboard
 ```
 
 然后打开浏览器，访问 `http://localhost:11080`
@@ -60,14 +60,14 @@ docker run -d \
 1. **克隆仓库**
 
 ```bash
-git clone https://github.com/yourusername/sub2api-dashboard.git
-cd sub2api-dashboard
+git clone https://github.com/rysinal86/sub2api-key-dashboard.git
+cd sub2api-key-dashboard
 ```
 
 2. **构建 Docker 镜像**
 
 ```bash
-docker build -t sub2api-dashboard .
+docker build -t rysinal86/sub2api-key-dashboard .
 ```
 
 3. **运行容器**
@@ -76,8 +76,8 @@ docker build -t sub2api-dashboard .
 docker run -d \
   -p 11080:11080 \
   -e API_BASE_URL=https://your-api-domain.com \
-  --name sub2api-dashboard \
-  sub2api-dashboard
+  --name sub2api-key-dashboard \
+  rysinal86/sub2api-key-dashboard
 ```
 
 ### 方式二：Docker Compose
@@ -88,7 +88,7 @@ docker run -d \
 version: '3.8'
 
 services:
-  sub2api-dashboard:
+  sub2api-key-dashboard:
     build: .
     ports:
       - "11080:11080"
